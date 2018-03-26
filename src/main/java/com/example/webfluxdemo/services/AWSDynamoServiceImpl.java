@@ -32,7 +32,7 @@ public class AWSDynamoServiceImpl implements AWSDynamoService {
     @Override
     public Mono<Void> save(Mono<Tweet> tweetMono) {
 
-        Tweet tweet = tweetMono.;
+        Tweet tweet = new Tweet("First Message dummy");
 
         Table table = dynamoDB.getTable(tableName);
         try {

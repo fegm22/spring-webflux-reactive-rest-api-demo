@@ -1,15 +1,8 @@
 package com.example.webfluxdemo.handlers;
 
 import com.example.webfluxdemo.model.Tweet;
-import com.example.webfluxdemo.model.TweetRequest;
 import com.example.webfluxdemo.model.TweetResponse;
 import com.example.webfluxdemo.services.AWSDynamoService;
-import org.learning.by.example.reactive.microservices.model.GeographicCoordinates;
-import org.learning.by.example.reactive.microservices.model.LocationRequest;
-import org.learning.by.example.reactive.microservices.model.LocationResponse;
-import org.learning.by.example.reactive.microservices.model.SunriseSunset;
-import org.learning.by.example.reactive.microservices.services.GeoLocationService;
-import org.learning.by.example.reactive.microservices.services.SunriseSunsetService;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -20,7 +13,6 @@ import static org.springframework.web.reactive.function.BodyInserters.fromObject
 public class ApiHandler {
 
     private static final String id = "id";
-    private static final String EMPTY_STRING = "";
 
     private final ErrorHandler errorHandler;
 
@@ -36,9 +28,9 @@ public class ApiHandler {
         Mono<TweetResponse> tweetResponseMono = awsDynamoService.findById(tweetId);
         return tweetResponseMono
                 .flatMap(tweet -> ServerResponse.ok().contentType(APPLICATION_JSON).body(fromObject(tweet)))
-                .switchIfEmpty(ServerResponse.notFound().build());
+                .switchIfEmpty(ServerResponse.notFound().build())
+                .onErrorResume(errorHandler::throwableError);
     }
-
 
     public Mono<ServerResponse> createTweet(ServerRequest request) {
         Mono<Tweet> tweetMono = request.bodyToMono(Tweet.class);
