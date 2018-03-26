@@ -1,4 +1,4 @@
-package com.example.webfluxdemo.repository;
+package com.example.webfluxdemo.services;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
 import com.amazonaws.services.dynamodbv2.document.DeleteItemOutcome;
@@ -11,28 +11,28 @@ import com.amazonaws.services.dynamodbv2.document.spec.UpdateItemSpec;
 import com.amazonaws.services.dynamodbv2.document.utils.NameMap;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.ReturnValue;
-import com.example.webfluxdemo.config.DynamoDBConfig;
 import com.example.webfluxdemo.model.Tweet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.example.webfluxdemo.model.TweetResponse;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.HashSet;
+@Service
+public class AWSDynamoServiceImpl implements AWSDynamoService {
 
-@Component
-public class DocumentAPIItemCRUDExample implements TweetRepository {
+    private static final  String tableName = "Tweet";
 
-    @Autowired
-    DynamoDBConfig dynamoDBConfig;
+    AmazonDynamoDBAsync client;
+    DynamoDB dynamoDB;
 
-    AmazonDynamoDBAsync client = dynamoDBConfig.amazonDynamoDB();
-    DynamoDB dynamoDB = new DynamoDB(client);
-
-    static String tableName = "Tweet";
+    public AWSDynamoServiceImpl(final AmazonDynamoDBAsync client) {
+        this.client = client;
+        this.dynamoDB = new DynamoDB(client);
+    }
 
     @Override
-    public Mono<Tweet> save(Tweet tweet) {
+    public Mono<Void> save(Mono<Tweet> tweetMono) {
+
+        Tweet tweet = tweetMono.;
 
         Table table = dynamoDB.getTable(tableName);
         try {
@@ -48,11 +48,11 @@ public class DocumentAPIItemCRUDExample implements TweetRepository {
             System.err.println(e.getMessage());
 
         }
-        return null;
+        return Mono.empty();
     }
 
     @Override
-    public Mono<Tweet> findById(String id) {
+    public Mono<TweetResponse> findById(String id) {
         Table table = dynamoDB.getTable(tableName);
 
         try {
@@ -68,7 +68,7 @@ public class DocumentAPIItemCRUDExample implements TweetRepository {
             System.err.println(e.getMessage());
         }
 
-        return null;
+        return Mono.empty();
 
     }
 

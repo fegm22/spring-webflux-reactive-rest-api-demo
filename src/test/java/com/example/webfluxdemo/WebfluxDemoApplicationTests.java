@@ -1,7 +1,7 @@
 package com.example.webfluxdemo;
 
 import com.example.webfluxdemo.model.Tweet;
-import com.example.webfluxdemo.repository.TweetRepository;
+import com.example.webfluxdemo.services.AWSDynamoService;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +22,7 @@ public class WebfluxDemoApplicationTests {
 	private WebTestClient webTestClient;
 
 	@Autowired
-    TweetRepository tweetRepository;
+    AWSDynamoService AWSDynamoService;
 
 	@Test
 	public void testCreateTweet() {
@@ -52,7 +52,7 @@ public class WebfluxDemoApplicationTests {
 
     @Test
     public void testGetSingleTweet() {
-        Tweet tweet = tweetRepository.save(new Tweet("Hello, World!")).block();
+        Tweet tweet = AWSDynamoService.save(new Tweet("Hello, World!")).block();
 
         webTestClient.get()
                 .uri("/tweets/{id}", Collections.singletonMap("id", tweet.getId()))
@@ -65,7 +65,7 @@ public class WebfluxDemoApplicationTests {
 
     @Test
     public void testUpdateTweet() {
-        Tweet tweet = tweetRepository.save(new Tweet("Initial Tweet")).block();
+        Tweet tweet = AWSDynamoService.save(new Tweet("Initial Tweet")).block();
 
         Tweet newTweetData = new Tweet("Updated Tweet");
 
@@ -83,7 +83,7 @@ public class WebfluxDemoApplicationTests {
 
     @Test
     public void testDeleteTweet() {
-	    Tweet tweet = tweetRepository.save(new Tweet("To be deleted")).block();
+	    Tweet tweet = AWSDynamoService.save(new Tweet("To be deleted")).block();
 
 	    webTestClient.delete()
                 .uri("/tweets/{id}", Collections.singletonMap("id",  tweet.getId()))
