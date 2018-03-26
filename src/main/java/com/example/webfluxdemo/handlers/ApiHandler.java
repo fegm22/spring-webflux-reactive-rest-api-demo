@@ -1,6 +1,5 @@
 package com.example.webfluxdemo.handlers;
 
-import com.example.webfluxdemo.model.TweetTable;
 import com.example.webfluxdemo.model.Tweet;
 import com.example.webfluxdemo.services.AWSDynamoService;
 import org.springframework.web.reactive.function.server.ServerRequest;

@@ -1,6 +1,5 @@
 package com.example.webfluxdemo.services;
 
-import com.example.webfluxdemo.model.TweetTable;
 import com.example.webfluxdemo.model.Tweet;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
