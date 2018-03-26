@@ -1,18 +1,16 @@
 package com.example.webfluxdemo.model;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
 
-
-/**
- * Created by rajeevkumarsingh on 08/09/17.
- */
-@Document(collection = "tweets")
+@DynamoDBTable(tableName = "Tweet")
 public class Tweet {
     @Id
     private String id;
@@ -25,7 +23,6 @@ public class Tweet {
     private Date createdAt = new Date();
 
     public Tweet() {
-
     }
 
     public Tweet(String text) {
@@ -33,6 +30,7 @@ public class Tweet {
         this.text = text;
     }
 
+    @DynamoDBHashKey(attributeName = "Id")
     public String getId() {
         return id;
     }
@@ -41,6 +39,7 @@ public class Tweet {
         this.id = id;
     }
 
+    @DynamoDBAttribute(attributeName = "Text")
     public String getText() {
         return text;
     }
@@ -49,6 +48,7 @@ public class Tweet {
         this.text = text;
     }
 
+    @DynamoDBAttribute(attributeName = "CreatedAt")
     public Date getCreatedAt() {
         return createdAt;
     }

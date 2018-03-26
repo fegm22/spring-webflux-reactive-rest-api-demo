@@ -15,9 +15,6 @@ import reactor.core.publisher.Mono;
 
 import javax.validation.Valid;
 
-/**
- * Created by rajeevkumarsingh on 08/09/17.
- */
 @RestController
 public class TweetController {
 
@@ -69,8 +66,6 @@ public class TweetController {
     public Flux<Tweet> streamAllTweets() {
         return tweetRepository.findAll();
     }
-
-
 
 
     /*
