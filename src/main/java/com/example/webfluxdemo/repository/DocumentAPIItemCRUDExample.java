@@ -12,8 +12,10 @@ import com.amazonaws.services.dynamodbv2.document.utils.NameMap;
 import com.amazonaws.services.dynamodbv2.document.utils.ValueMap;
 import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import com.example.webfluxdemo.config.DynamoDBConfig;
+import com.example.webfluxdemo.model.Tweet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,23 +31,15 @@ public class DocumentAPIItemCRUDExample implements TweetRepository {
 
     static String tableName = "Tweet";
 
-    public void save() {
+    @Override
+    public Mono<Tweet> save(Tweet tweet) {
 
         Table table = dynamoDB.getTable(tableName);
         try {
 
-            Item item = new Item().withPrimaryKey("Id", 120).withString("Title", "Book 120 Title")
-                    .withString("ISBN", "120-1111111111")
-                    .withStringSet("Authors", new HashSet<String>(Arrays.asList("Author12", "Author22")))
-                    .withNumber("Price", 20).withString("Dimensions", "8.5x11.0x.75").withNumber("PageCount", 500)
-                    .withBoolean("InPublication", false).withString("ProductCategory", "Book");
-            table.putItem(item);
-
-            item = new Item().withPrimaryKey("Id", 121).withString("Title", "Book 121 Title")
-                    .withString("ISBN", "121-1111111111")
-                    .withStringSet("Authors", new HashSet<String>(Arrays.asList("Author21", "Author 22")))
-                    .withNumber("Price", 20).withString("Dimensions", "8.5x11.0x.75").withNumber("PageCount", 500)
-                    .withBoolean("InPublication", true).withString("ProductCategory", "Book");
+            Item item = new Item().withPrimaryKey("Id", tweet.getId())
+                    .withString("Text", tweet.getText())
+                    .withString("CreatedAt", tweet.getCreatedAt().toString());
             table.putItem(item);
 
         }
@@ -54,14 +48,16 @@ public class DocumentAPIItemCRUDExample implements TweetRepository {
             System.err.println(e.getMessage());
 
         }
+        return null;
     }
 
-    private void retrieveItem() {
+    @Override
+    public Mono<Tweet> findById(String id) {
         Table table = dynamoDB.getTable(tableName);
 
         try {
 
-            Item item = table.getItem("Id", 120, "Id, ISBN, Title, Authors", null);
+            Item item = table.getItem("Id", id, "Id, Text, CreatedAt", null);
 
             System.out.println("Printing item after retrieving it....");
             System.out.println(item.toJSONPretty());
@@ -71,6 +67,8 @@ public class DocumentAPIItemCRUDExample implements TweetRepository {
             System.err.println("GetItem failed.");
             System.err.println(e.getMessage());
         }
+
+        return null;
 
     }
 
