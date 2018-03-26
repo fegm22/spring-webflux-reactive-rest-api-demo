@@ -1,7 +1,7 @@
 package com.example.webfluxdemo.handlers;
 
+import com.example.webfluxdemo.model.TweetTable;
 import com.example.webfluxdemo.model.Tweet;
-import com.example.webfluxdemo.model.TweetResponse;
 import com.example.webfluxdemo.services.AWSDynamoService;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -25,7 +25,7 @@ public class ApiHandler {
 
     public Mono<ServerResponse> getTweet(final ServerRequest request) {
         String tweetId = request.pathVariable(id);
-        Mono<TweetResponse> tweetResponseMono = awsDynamoService.findById(tweetId);
+        Mono<Tweet> tweetResponseMono = awsDynamoService.findById(tweetId);
         return tweetResponseMono
                 .flatMap(tweet -> ServerResponse.ok().contentType(APPLICATION_JSON).body(fromObject(tweet)))
                 .switchIfEmpty(ServerResponse.notFound().build())
