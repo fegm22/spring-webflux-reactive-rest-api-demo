@@ -4,6 +4,7 @@ import com.example.webfluxdemo.model.Tweet;
 import com.example.webfluxdemo.services.AWSDynamoService;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -36,4 +37,9 @@ public class ApiHandler {
         return ServerResponse.ok().build(awsDynamoService.save(tweetMono));
     }
 
+
+    public Mono<ServerResponse> findAll(ServerRequest request) {
+        Flux<Tweet> people = this.awsDynamoService.findAll();
+        return ServerResponse.ok().contentType(APPLICATION_JSON).body(people, Tweet.class);
+    }
 }

@@ -23,6 +23,7 @@ class ApiRouter {
                 nest(path(TWEETS),
                         nest(accept(APPLICATION_JSON),
                                 route(GET(ID), apiHandler::getTweet)
+                                        .andRoute(GET("/"), apiHandler::findAll)
                                         .andRoute(POST("/"), apiHandler::createTweet)
                         ).andOther(route(RequestPredicates.all(), errorHandler::notFound))
                 );
