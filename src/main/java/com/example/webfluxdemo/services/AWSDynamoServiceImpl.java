@@ -1,12 +1,14 @@
 package com.example.webfluxdemo.services;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsync;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDBAsyncClient;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ComparisonOperator;
 import com.amazonaws.services.dynamodbv2.model.Condition;
 import com.amazonaws.services.dynamodbv2.model.ScanResult;
 import com.example.webfluxdemo.model.Tweet;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
@@ -26,6 +29,7 @@ public class AWSDynamoServiceImpl implements AWSDynamoService {
     private static final String tableName = "Tweet";
 
     AmazonDynamoDBAsync client;
+    AmazonDynamoDBAsyncClient clientAsync;
     DynamoDBMapper dynamoDBMapper;
     DynamoDB dynamoDB;
 
@@ -60,7 +64,7 @@ public class AWSDynamoServiceImpl implements AWSDynamoService {
 
     }
 
-    public Flux<Tweet> findAll() {
+    public Flux<Tweet> findAllBlock() {
         Map<String, AttributeValue> eav = new HashMap<>();
         eav.put(":val1", new AttributeValue().withS(LocalDateTime.now().toString()));
 
@@ -75,6 +79,29 @@ public class AWSDynamoServiceImpl implements AWSDynamoService {
 
     }
 
+    @Override
+    public Flux<List<Tweet>> findAll() {
+        Map<String, Condition> eav = new HashMap<>();
+        Condition condition = new Condition();
+        condition.withAttributeValueList(new AttributeValue().withS(LocalDateTime.now().toString()));
+        condition.withComparisonOperator(ComparisonOperator.LT);
+
+        eav.put("CreatedAt ", condition);
+
+        Future<ScanResult> future = client.scanAsync("Tweet", eav);
+
+        try {
+            ScanResult scanResult = future.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+
+        return null;
+
+    }
 
 }
 

@@ -19,8 +19,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.reactive.function.server.RouterFunction;
 
-@Configuration
-@EnableWebFlux
+//@Configuration
+//@EnableWebFlux
 public class DynamoDBConfig {
 
 	@Value("${amazon.dynamodb.endpoint}")

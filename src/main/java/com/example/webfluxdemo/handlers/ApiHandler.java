@@ -6,6 +6,9 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
+
+import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.web.reactive.function.BodyInserters.fromObject;
@@ -39,7 +42,7 @@ public class ApiHandler {
 
 
     public Mono<ServerResponse> findAll(ServerRequest request) {
-        Flux<Tweet> people = this.awsDynamoService.findAll();
-        return ServerResponse.ok().contentType(APPLICATION_JSON).body(people, Tweet.class);
+        Flux<List<Tweet>> people = this.awsDynamoService.findAll();
+        return ServerResponse.ok().contentType(APPLICATION_JSON).body(fromObject(people));
     }
 }
