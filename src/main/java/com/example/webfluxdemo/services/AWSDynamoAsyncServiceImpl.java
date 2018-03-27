@@ -1,7 +1,6 @@
 package com.example.webfluxdemo.services;
 
 import com.example.webfluxdemo.model.Tweet;
-import com.example.webfluxdemo.model.TweetTable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.dynamodb.DynamoDBAsyncClient;
@@ -11,7 +10,6 @@ import software.amazon.awssdk.services.dynamodb.model.Condition;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
@@ -19,6 +17,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,7 @@ public class AWSDynamoAsyncServiceImpl implements AWSDynamoService {
 
     private static final String tableName = "Tweet";
 
-    DynamoDBAsyncClient client;
+    private static DynamoDBAsyncClient client;
 
     public AWSDynamoAsyncServiceImpl(final DynamoDBAsyncClient client) {
         this.client = client;
@@ -39,17 +38,16 @@ public class AWSDynamoAsyncServiceImpl implements AWSDynamoService {
     }
 
     private void saveTweet(String tweetMessage) {
-        TweetTable tweetTable = new TweetTable();
-        tweetTable.setText(tweetMessage);
-
         Map<String, AttributeValue> attributeValueHashMap = new HashMap<>();
         attributeValueHashMap.put("Text", AttributeValue.builder().s(tweetMessage).build());
+        attributeValueHashMap.put("Id", AttributeValue.builder().s(UUID.randomUUID().toString()).build());
+        attributeValueHashMap.put("CreatedAt", AttributeValue.builder().s(LocalDateTime.now().toString()).build());
 
         PutItemRequest putItemRequest = PutItemRequest.builder().tableName(tableName)
                 .item(attributeValueHashMap)
                 .build();
 
-        CompletableFuture<PutItemResponse> completableFuture = client.putItem(putItemRequest);
+        client.putItem(putItemRequest);
     }
 
     @Override
@@ -79,10 +77,11 @@ public class AWSDynamoAsyncServiceImpl implements AWSDynamoService {
                 .attributeValueList(AttributeValue.builder().s(LocalDateTime.now().toString()).build())
                 .build();
 
-        conditionHashMap.put("CreatedAt ", condition);
+        conditionHashMap.put("CreatedAt", condition);
 
-        ScanRequest scanRequest = ScanRequest.builder().tableName(tableName).attributesToGet("Text")
-                .scanFilter(conditionHashMap).build();
+        ScanRequest scanRequest = ScanRequest.builder().tableName(tableName)
+                .scanFilter(conditionHashMap)
+                .build();
 
         CompletableFuture<ScanResponse> future = client.scan(scanRequest);
 
@@ -93,10 +92,8 @@ public class AWSDynamoAsyncServiceImpl implements AWSDynamoService {
                                 )).collect(Collectors.toList())
                         );
 
-
         return Flux.from(Mono.fromFuture(response));
 
     }
-
 }
 

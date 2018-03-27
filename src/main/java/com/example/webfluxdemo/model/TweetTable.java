@@ -15,10 +15,10 @@ public class TweetTable {
     private String text;
     private String createdAt;
 
-//    public TweetTable(String text) {
-//        this.text = text;
-//        this.createdAt = LocalDateTime.now().toString();
-//    }
+    public TweetTable(String text) {
+        this.text = text;
+        this.createdAt = LocalDateTime.now().toString();
+    }
 //
 //    public TweetTable(String id, String text, String createdAt) {
 //        this.id = id;

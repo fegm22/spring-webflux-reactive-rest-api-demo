@@ -41,13 +41,7 @@
             <artifactId>reactor-test</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-        <groupId>com.amazonaws</groupId>
-        <artifactId>aws-java-sdk-dynamodb</artifactId>
-        <version>1.11.301</version>
-        </dependency>
-
+        
         <!--<dependency>-->
             <!--<groupId>software.amazon.awssdk</groupId>-->
             <!--<artifactId>aws-java-sdk</artifactId>-->

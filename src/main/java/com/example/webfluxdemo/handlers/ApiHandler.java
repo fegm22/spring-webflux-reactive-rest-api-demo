@@ -2,11 +2,11 @@ package com.example.webfluxdemo.handlers;
 
 import com.example.webfluxdemo.model.Tweet;
 import com.example.webfluxdemo.services.AWSDynamoService;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
 
 import java.util.List;
 
@@ -43,6 +43,7 @@ public class ApiHandler {
 
     public Mono<ServerResponse> findAll(ServerRequest request) {
         Flux<List<Tweet>> people = this.awsDynamoService.findAll();
-        return ServerResponse.ok().contentType(APPLICATION_JSON).body(fromObject(people));
+        ParameterizedTypeReference<List<Tweet>> typeRef = new ParameterizedTypeReference<List<Tweet>>() {};
+        return ServerResponse.ok().contentType(APPLICATION_JSON).body(people, typeRef);
     }
 }
